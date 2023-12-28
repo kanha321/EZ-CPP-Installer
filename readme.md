@@ -1,4 +1,4 @@
-# Automated Installation of C Compiler and VS Code
+# EZ CPP 😎
 
 ### This program streamlines the setup process for the following tasks:
 
