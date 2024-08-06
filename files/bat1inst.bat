@@ -24,7 +24,7 @@ if %bits%==64-bit (
 ) else (
     echo you have downloaded the wrong file, your system is 32-bit
     echo.
-    echo go to https://www.bit.ly/c-installer and download vscode32.exe from vscode folder and install it
+    echo go to https://github.com/kanha321/EZ-CPP-Installer and download vscode32.exe from vscode folder and install it
 )
 echo.
 echo installing MinGW

@@ -12,7 +12,7 @@ if %bits%==64-bit (
     echo.
     echo you have downloaded the wrong file
     echo.
-    echo goto https://www.bit.ly/c-installer and download the 32-bit version
+    echo goto https://github.com/kanha321/EZ-CPP-Installer and download the v3.0 32-bit version
     echo.
     pause
     exit
