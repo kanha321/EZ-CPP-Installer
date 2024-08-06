@@ -12,7 +12,7 @@ code --help>%file%
 ) || (
     echo vs code may not be installed properly,
     echo run "install-c" file again and 
-    echo "check all the 5 checkboxes in the installer (as shown in the image)"
+    echo "check all the 5 checkboxes in the installer"
     pause
     exit
     echo.
