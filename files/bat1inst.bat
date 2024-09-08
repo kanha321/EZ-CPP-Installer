@@ -20,7 +20,7 @@ for /f %%a in ('wmic os get osarchitecture ^| find /i "bit"') do set "bits=%%a"
 @REM start %cd%\illustration2.png
 @REM timeout /t 20
 if %bits%==64-bit (
-    start /w %cd%\vscode64.exe
+    start "" /w "%cd%\vscode64.exe"
 ) else (
     echo you have downloaded the wrong file, your system is 32-bit
     echo.
@@ -29,7 +29,7 @@ if %bits%==64-bit (
 echo.
 echo installing MinGW
 echo.
-%cd%\7-Zip\7z x "%cd%\MinGW.7z" -o"c:\" -y
+"%cd%\7-Zip\7z" x "%cd%\MinGW.7z" -o"c:\" -y
 echo. 
 echo MinGW installed
 echo.

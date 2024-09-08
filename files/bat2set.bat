@@ -27,11 +27,11 @@ echo.
 echo.
 echo Installing required extensions
 echo.
-%cd%\7-Zip\7z x "%cd%\vs_code_settings\vscode.7z" -o"c:\users\%username%" -y
+"%cd%\7-Zip\7z" x "%cd%\vs_code_settings\vscode.7z" -o"c:\users\%username%" -y
 echo.
 echo.
 echo Configuring Settings and Keybindings
-%cd%\7-Zip\7z x "%cd%\vs_code_settings\Code.7z" -o"C:\Users\%username%\AppData\Roaming" -y
+"%cd%\7-Zip\7z" x "%cd%\vs_code_settings\Code.7z" -o"C:\Users\%username%\AppData\Roaming" -y
 echo.
 echo.
 echo Installation Complete

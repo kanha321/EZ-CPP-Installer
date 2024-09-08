@@ -2,7 +2,7 @@
 for /f %%a in ('wmic os get osarchitecture ^| find /i "bit"') do set "bits=%%a"
 
 if %bits%==64-bit (
-	color 0a
+    color 0a
     cd files
     call bat1inst.bat
 ) else (
