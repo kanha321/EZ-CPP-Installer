@@ -31,7 +31,7 @@ echo.
 echo.
 echo.
 echo Configuring Settings and Keybindings
-"%cd%\7-Zip\7z" x "%cd%\vs_code_settings\Code.7z" -o"C:\Users\%username%\AppData\Roaming" -y
+"%cd%\7-Zip\7z" x "%cd%\vs_code_settings\Code.7z.001" -o"C:\Users\%username%\AppData\Roaming" -y
 echo.
 echo.
 echo Installation Complete

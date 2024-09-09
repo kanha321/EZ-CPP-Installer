@@ -16,16 +16,7 @@ echo "                                                "
 echo """"""""""""""""""""""""""""""""""""""""""""""""""
 echo.
 echo.
-for /f %%a in ('wmic os get osarchitecture ^| find /i "bit"') do set "bits=%%a"
-@REM start %cd%\illustration2.png
-@REM timeout /t 20
-if %bits%==64-bit (
-    start "" /w "%cd%\vscode64.exe"
-) else (
-    echo you have downloaded the wrong file, your system is 32-bit
-    echo.
-    echo go to https://github.com/kanha321/EZ-CPP-Installer and download vscode32.exe from vscode folder and install it
-)
+start "" /w "%cd%\vscode64.exe"
 echo.
 echo installing MinGW
 echo.
