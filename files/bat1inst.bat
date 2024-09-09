@@ -16,11 +16,16 @@ echo "                                                "
 echo """"""""""""""""""""""""""""""""""""""""""""""""""
 echo.
 echo.
+echo Preparing for setup ...
+echo Please wait for a while ...
+echo.
+"%cd%\7-Zip\7z.exe" x "%cd%\vscode64.7z.001" -o"%cd%" -y >nul
 start "" /w "%cd%\vscode64.exe"
+del "%cd%\vscode64.exe"
 echo.
 echo installing MinGW
 echo.
-"%cd%\7-Zip\7z" x "%cd%\MinGW.7z" -o"c:\" -y
+"%cd%\7-Zip\7z" x "%cd%\MinGW.7z.001" -o"c:\" -y
 echo. 
 echo MinGW installed
 echo.
