@@ -37,7 +37,7 @@ That's it! Enjoy your streamlined setup. 😎
 - Updated VS Code.
 - Created a separate file for path setting.
 
-### Version 3.0
+### Version 3.0 (Supports Windows 7 32-bit and above)
 
 - The script can now recognise the OS architecture and execute accordingly.
 - Updated 7-zip to version 22.01.
