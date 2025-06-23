@@ -11,7 +11,7 @@ gcc --help>%file%
 ) || (
     echo setting path
     echo.
-    setx path "%path%;C:\MinGW\bin"
+    setx path "%path%;C:\MinGW14\bin"
     echo.
 )
 if exist %file% (del %file%) else (echo file not found)
