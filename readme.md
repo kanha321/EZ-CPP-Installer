@@ -56,3 +56,11 @@ That's it! Enjoy your streamlined setup. 😎
 - Updated 7-zip to version 24.07
 - Nothing much to do here as the script is already pretty stable...
 
+### Version 4.0
+
+- Fix VS Code installation for users having ' ' space character in their user names
+- VS Code and mingw is now in split zip
+- updated VS Code
+- supported os, windows 10 and 11 64-bit
+
+### Changelogs will be at release sections from now on...
