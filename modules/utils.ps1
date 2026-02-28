@@ -51,8 +51,7 @@ function Get-7zaPath {
         $script:SevenZaPath = $sevenZaExe
         return $sevenZaExe
     }
-
-    Write-Info "Downloading 7za.exe..."
+    
     try {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri $script:SevenZaUrl -OutFile $sevenZaExe -UseBasicParsing
@@ -95,7 +94,7 @@ function Invoke-WithBounceProgress {
 
     $proc = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
 
-    $width = 25
+    $width = 12
     $pos = 0
     $dir = 1
 
@@ -151,13 +150,52 @@ function Expand-7zArchive {
     }
 
     try {
-        $argsArray = @("x", "`"$ArchivePath`"", "-o`"$DestinationPath`"", "-y")
-        $success = Invoke-WithBounceProgress -Message "Extracting archive" -FilePath $sevenZa -ArgumentList $argsArray
-        if (-not $success) {
+        $tempOut = Join-Path $env:TEMP "ez-7z-out.log"
+        $tempErr = Join-Path $env:TEMP "ez-7z-err.log"
+        
+        $argsArray = @("x", "`"$ArchivePath`"", "-o`"$DestinationPath`"", "-y", "-bsp1")
+        $proc = Start-Process -FilePath $sevenZa -ArgumentList $argsArray -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+
+        $barWidth = 40
+        $foodArray = @()
+        for ($i = 0; $i -lt $barWidth; $i++) {
+            $foodArray += if ($i % 2 -eq 0) { "o" } else { " " }
+        }
+        $pacman = [PSCustomObject]@{ Value = "C" }
+        
+        $percent = 0
+        while (-not $proc.HasExited) {
+            try {
+                if (Test-Path $tempOut) {
+                    $fs = New-Object IO.FileStream($tempOut, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+                    $sr = New-Object IO.StreamReader($fs)
+                    $outContent = $sr.ReadToEnd()
+                    $sr.Close()
+                    $fs.Close()
+                    
+                    $percentMatches = [regex]::Matches($outContent, '(\d{1,3})%')
+                    if ($percentMatches.Count -gt 0) {
+                        $percent = [int]($percentMatches[$percentMatches.Count - 1].Groups[1].Value)
+                    }
+                }
+            }
+            catch {}
+            
+            Show-PacmanProgress -TotalBytes 100 -BytesRead $percent -BarWidth $barWidth -PacmanState ([ref]$pacman) -FoodArray $foodArray -PercentMode
+            Start-Sleep -Milliseconds 100
+        }
+        
+        # Output 100% at the end
+        Show-PacmanProgress -TotalBytes 100 -BytesRead 100 -BarWidth $barWidth -PacmanState ([ref]$pacman) -FoodArray $foodArray -PercentMode
+        Write-Host ""
+        
+        if ($proc.ExitCode -eq 0) {
+            return $true
+        }
+        else {
             Write-Err "Extraction failed"
             return $false
         }
-        return $true
     }
     catch {
         Write-Err "Extraction error: $_"
@@ -181,8 +219,10 @@ function Show-PacmanProgress {
         [ref] object tracking Pac-Man mouth state (open/closed).
     .PARAMETER FoodArray
         Array of characters representing the food dots.
-    .PARAMETER TotalMB
-        Pre-calculated total size in MB (for display).
+    .PARAMETER ItemMode
+        If specified, displays counts (e.g., 2 / 5) instead of Megabytes.
+    .PARAMETER PercentMode
+        If specified, displays only the percentage.
     #>
     param(
         [long]$TotalBytes,
@@ -190,15 +230,27 @@ function Show-PacmanProgress {
         [int]$BarWidth = 40,
         [ref]$PacmanState,
         [object[]]$FoodArray,
-        [double]$TotalMB
+        [double]$TotalMB,
+        [switch]$ItemMode,
+        [switch]$PercentMode
     )
 
     $percent = if ($TotalBytes -eq 0) { 0 } else { ($BytesRead / $TotalBytes) * 100 }
     $percentDisplay = "{0,6:N1}%" -f $percent
 
-    $downloadedMB = if ($TotalBytes -eq 0) { 0 } else { $BytesRead / 1MB }
-    $downloadedStr = "{0,6:N2} MB" -f $downloadedMB
-    $totalStr = "{0:N2} MB" -f $TotalMB
+    if ($PercentMode) {
+        $downloadedStr = ""
+        $totalStr = ""
+    }
+    elseif ($ItemMode) {
+        $downloadedStr = "{0,2}" -f $BytesRead
+        $totalStr = "$TotalBytes"
+    }
+    else {
+        $downloadedMB = if ($TotalBytes -eq 0) { 0 } else { $BytesRead / 1MB }
+        $downloadedStr = "{0,6:N2} MB" -f $downloadedMB
+        $totalStr = "{0:N2} MB" -f $TotalMB
+    }
 
     $eaten = [int](($percent / 100) * $BarWidth)
 
@@ -224,7 +276,12 @@ function Show-PacmanProgress {
     }
 
     $bar = "      [$barContents]"
-    Write-Host -NoNewline "`r$bar $percentDisplay - $downloadedStr / $totalStr"
+    if ($PercentMode) {
+        Write-Host -NoNewline "`r$bar $percentDisplay                "
+    }
+    else {
+        Write-Host -NoNewline "`r$bar $percentDisplay - $downloadedStr / $totalStr"
+    }
 }
 
 function Invoke-DownloadWithProgress {

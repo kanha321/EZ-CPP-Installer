@@ -127,7 +127,7 @@ Remove-Item -Path $modulesDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host ""
 Write-Host "  ╔══════════════════════════════════════════╗" -ForegroundColor Green
 Write-Host "  ║                                          ║" -ForegroundColor Green
-Write-Host "  ║      Installation Complete! 🎉            ║" -ForegroundColor Green
+Write-Host "  ║      Installation Complete! 🎉           ║" -ForegroundColor Green
 Write-Host "  ║                                          ║" -ForegroundColor Green
 Write-Host "  ╚══════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""

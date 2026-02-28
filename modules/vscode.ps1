@@ -115,9 +115,12 @@ function Install-VSCodeExtensions {
         Start-Sleep -Seconds 2
     }
 
+    $codeCmd = (Get-Command code).Source
+
     foreach ($ext in $script:Extensions) {
-        Write-Info "Installing $ext..."
-        & code --install-extension $ext --force 2>&1 | Out-Null
+        Write-Log "INFO" "Installing extension $ext..."
+        $argsArray = @("--install-extension", $ext, "--force")
+        Invoke-WithBounceProgress -Message "Installing $ext" -FilePath $codeCmd -ArgumentList $argsArray | Out-Null
     }
 
     Write-Ok "Extensions installed ($($script:Extensions.Count) total)"

@@ -57,7 +57,7 @@ function Invoke-WithBounceProgress {
 
     $proc = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
 
-    $width = 25
+    $width = 12
     $pos = 0
     $dir = 1
 
@@ -83,8 +83,11 @@ function Invoke-WithBounceProgress {
     }
     else {
         if (Test-Path $tempErr) {
-            $errText = (Get-Content $tempErr -Raw).Trim()
-            if ($errText) { Write-Warn "Process output: $errText" }
+            $errContent = Get-Content $tempErr -Raw
+            if ($null -ne $errContent) {
+                $errText = $errContent.Trim()
+                if ($errText) { Write-Warn "Process output: $errText" }
+            }
         }
         return $false
     }
@@ -108,22 +111,27 @@ Write-Host ""
 # MinGW Cleanup
 # ══════════════════════════════════════════════════════════════════════════════
 if ($removeMingw.ToLower() -eq 'y') {
-    Write-Step "Removing MinGW GCC 14..."
     $mingwDir = "C:\MinGW14"
     if (Test-Path $mingwDir) {
-        Remove-Item -Path $mingwDir -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Log "INFO" "Removing MinGW GCC 14..."
+        $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$mingwDir' -Recurse -Force -ErrorAction SilentlyContinue")
+        Invoke-WithBounceProgress -Message "Removing MinGW GCC 14" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "Deleted C:\MinGW14"
     }
     else {
         Write-Ok "C:\MinGW14 not found (already removed)."
     }
 
-    Write-Step "Cleaning MinGW from User PATH..."
     $userPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
     if ($userPath -and $userPath -match 'MinGW14') {
-        $cleaned = ($userPath -split ';') | Where-Object { $_ -and $_ -notmatch 'MinGW14' }
-        $newPath = ($cleaned -join ';').Trim(';')
-        [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
+        Write-Log "INFO" "Cleaning MinGW from User PATH..."
+        $scriptBlock = {
+            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::User)
+            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'MinGW14' }
+            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::User)
+        }.ToString()
+        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
+        Invoke-WithBounceProgress -Message "Cleaning MinGW Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "MinGW removed from User PATH."
     }
     else {
@@ -160,12 +168,13 @@ if ($removeVscode.ToLower() -eq 'y') {
         Write-Ok "VS Code uninstaller not found (already uninstalled)."
     }
 
-    Write-Step "Deleting VS Code Extensions and Settings..."
     $appDataCode = "$env:APPDATA\Code"
     $userProfileVscode = "$env:USERPROFILE\.vscode"
 
     if (Test-Path $appDataCode) {
-        Remove-Item -Path $appDataCode -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Log "INFO" "Deleting AppData\Roaming\Code..."
+        $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$appDataCode' -Recurse -Force -ErrorAction SilentlyContinue")
+        Invoke-WithBounceProgress -Message "Deleting VS Code Settings" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "Deleted AppData\Roaming\Code."
     }
     else {
@@ -173,19 +182,26 @@ if ($removeVscode.ToLower() -eq 'y') {
     }
     
     if (Test-Path $userProfileVscode) {
-        Remove-Item -Path $userProfileVscode -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Log "INFO" "Deleting .vscode extensions folder..."
+        $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$userProfileVscode' -Recurse -Force -ErrorAction SilentlyContinue")
+        Invoke-WithBounceProgress -Message "Deleting VS Code Extensions" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "Deleted .vscode extensions folder."
     }
     else {
         Write-Ok ".vscode extensions folder not found (already clean)."
     }
 
-    Write-Step "Cleaning VS Code from PATH..."
     # User PATH
     $userPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
     if ($userPath -and ($userPath -match 'Microsoft VS Code')) {
-        $cleaned = ($userPath -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
-        [Environment]::SetEnvironmentVariable("Path", ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::User)
+        Write-Log "INFO" "Cleaning VS Code from User PATH..."
+        $scriptBlock = {
+            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::User)
+            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
+            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::User)
+        }.ToString()
+        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
+        Invoke-WithBounceProgress -Message "Cleaning VS Code User Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "VS Code removed from User PATH."
     }
     else {
@@ -195,8 +211,14 @@ if ($removeVscode.ToLower() -eq 'y') {
     # Machine PATH
     $machinePath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine)
     if ($machinePath -and ($machinePath -match 'Microsoft VS Code')) {
-        $cleanedMachine = ($machinePath -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
-        [Environment]::SetEnvironmentVariable("Path", ($cleanedMachine -join ';').Trim(';'), [EnvironmentVariableTarget]::Machine)
+        Write-Log "INFO" "Cleaning VS Code from Machine PATH..."
+        $scriptBlock = {
+            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine)
+            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
+            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::Machine)
+        }.ToString()
+        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
+        Invoke-WithBounceProgress -Message "Cleaning VS Code Sys Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
         Write-Ok "VS Code removed from Machine PATH."
     }
     else {
@@ -206,6 +228,5 @@ if ($removeVscode.ToLower() -eq 'y') {
 
 Write-Host ""
 Write-Host "  [✓] Cleanup finished!" -ForegroundColor Green
-Write-Host "      You can now re-run the installer for a fresh test." -ForegroundColor DarkGray
 Write-Host ""
 Start-Sleep -Seconds 5
