@@ -1,38 +1,44 @@
-# EZ-CPP-Installer 😎
+# EZ CPP 😎
 
-The EZ C/C++ Installer is a streamline tool designed to take the headache out of setting up a C/C++ development environment on Windows. It automates the hardest parts of configuring MinGW and Visual Studio Code so you can start coding immediately.
+## Table of Contents
+- [What It Automates](#what-it-automates)
+- [Installation Procedure](#installation-procedure)
+- [Project History](#📜-project-history)
 
-### What it automates:
-1. **C/C++ Compiler Setup**: Downloads, extracts, and configures MinGW GCC 14.
-2. **Environment PATHs**: Automatically registers the compiler in your System PATH.
-3. **VS Code Setup**: Downloads the official Visual Studio Code installer and runs it silently.
-4. **VS Code Extensions**: Installs essential extensions natively (C/C++ IntelliSense, Code Runner).
-5. **Pre-configured Workspace**: Merges optimal User Settings, Keyboard Shortcuts, and Code Snippets directly into your VS Code profile.
+## What It Automates
 
----
+### This program streamlines the setup process for the following tasks:
 
-## 🚀 Installation Procedure (v6.0)
+1. **C Compiler (MinGW) Installation**: This step, often considered the most challenging (for beginners), is fully automated❤️.
+2. **Path Addition**
+3. **VS Code Extension Installation**
+4. **VS Code Settings Configuration**
+5. **VS Code Customised Keyboard Shortcuts**
+6. **User Snippets Installation**
+7. **🌟 NEW in v6.0: Automatic Visual Studio Code Installation!** (The official IDE is now dynamically downloaded and installed completely silently behind the scenes!)
+8. **🌟 NEW in v6.0: Automated Cleanup Uninstaller!** (A dedicated uninstaller script allows you to easily reverse the entire setup with a single command.)
 
-Gone are the days of downloading heavy zip files! The entire installer has been rewritten as a modern, single-command PowerShell script. It automatically downloads what it needs on the fly.
+> ~~Note:~~
+> - ~~VS Code needs to be installed manually. Automating this step would increase the program size to over 400MB and potentially decrease stability.~~
+> - ~~An older version of VS Code is available in `v3.0` to ensure compatibility with older versions of Windows, specifically Windows 7.~~
+> - ~~Looking for a way to install Visual Studio Code via winget with the "Open with Code" context menu option. This would reduce installer size and truly automate the setup while avoiding manual registry edits, though it will require internet access.~~
 
-**Step 1:** Open PowerShell as Administrator.
+## Installation Procedure  [(Download↓)](https://github.com/kanha321/EZ-CPP-Installer/releases)
 
-**Step 2:** Paste and run the following command to begin:
+~~1. Extract the zip file~~
+~~2. Run the "install-c" file.~~
+ ~~![](files\illustration2.png)~~
+~~3. During the VS Code installation, ensure all 5 checkboxes are selected.~~
+
+**New in Version 6.0!** Run everything with a single command.
+
+1. Open **Terminal** as Administrator.
+2. Run the following command:
 ```powershell
 irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/install.ps1 | iex
 ```
 
-**Step 3:** The script will ask if you want to install VS Code (choose `Y` if you don't have it).
-**Step 4:** Sit back and let the animated progress bars finish the setup!
-
-### 🧹 Uninstallation
-
-Need a clean slate? We provide an automated uninstaller that scrubs MinGW, VS Code, extensions, and cleans your PATH.
-```powershell
-irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/uninstaller/uninstall.ps1 | iex
-```
-
----
+That's it! Enjoy your streamlined setup. 😎
 
 ## 📜 Project History
 
@@ -46,4 +52,4 @@ The installer has evolved significantly since its inception, moving from basic b
 *   **v2.0 (Nov 1, 2022)** - Updated the bundled VS Code version and refactored the environment PATH logic into a dedicated script.
 *   **v1.0 (Nov 3, 2021)** - The original release. Solved major "looping" bugs where Windows failed to locate `minGW.exe` (which was removed due to false-positive antivirus flags). Basic functionality established.
 
-> **Note:** Older legacy zip versions (v1-v4) are archived on [mediafire](https://www.bit.ly/c-installer) but are no longer recommended as they were often brittle and prone to failure on modern machines. Please use the v6.0 script instead!
+> **Note:** Older legacy zip versions (v1-v2) are archived on [mediafire](https://www.bit.ly/c-installer) but are no longer recommended as they were often brittle and prone to failure on modern machines. Please use the latest script instead!
