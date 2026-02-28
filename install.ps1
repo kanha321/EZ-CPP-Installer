@@ -13,28 +13,15 @@
 # ── Auto-Elevate to Administrator ───────────────────────────────────────────
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Write-Host "`n  [!] Requesting Administrator privileges..." -ForegroundColor Yellow
-    Write-Host "      Please click 'Yes' on the UAC prompt to continue installation.`n" -ForegroundColor Cyan
-    Start-Sleep -Seconds 2
-    
-    # Relaunch the exact same irm | iex command in an elevated window
-    $invokeCommand = "irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/install.ps1 | iex"
-    # For local testing, we use the local URL instead
-    $invokeCommand = "irm http://localhost:8000/install.ps1 | iex"
-    
-    $argsArray = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Normal -Command `"$invokeCommand`""
-    
-    try {
-        Start-Process powershell.exe -ArgumentList $argsArray -Verb RunAs -Wait
-    }
-    catch {
-        Write-Host "  [✗] Administrator privileges were denied. Installation aborted." -ForegroundColor Red
-        if ($global:EzLogFile) { Add-Content -Path $global:EzLogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss.fff'))] [ERROR] Administrator privileges were denied. Installation aborted." }
-    }
+    Write-Host "`n  [✗] Administrator privileges are required to continue." -ForegroundColor Red
+    Write-Host "      Please open a new Terminal window as Administrator and run the command again." -ForegroundColor Yellow
+    Write-Host "      (Right-click the Start button -> 'Terminal (Admin)' or 'Windows PowerShell (Admin)')`n" -ForegroundColor Cyan
     return
 }
 
-$global:EzLogFile = Join-Path $PWD "ez-cpp-install.log"
+$global:EzLogFile = Join-Path $env:USERPROFILE "ez-cpp-install.log"
+Write-Host "  [i] Saving logs to: $global:EzLogFile" -ForegroundColor DarkGray
+
 Add-Content -Path $global:EzLogFile -Value "`n=================================================="
 Add-Content -Path $global:EzLogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss.fff'))] [INFO] Starting EZ C/C++ Installer v6.0"
 

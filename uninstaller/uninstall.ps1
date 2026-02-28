@@ -4,27 +4,18 @@
     Cleans up the development environment for testing/removal purposes.
 #>
 
-# ── Auto-Elevate to Administrator ───────────────────────────────────────────
+# ── Check Administrator Privileges ────────────────────────────────────────────
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Write-Host "`n  [!] Requesting Administrator privileges (needed to clean Registry and Program Files)..." -ForegroundColor Yellow
-    Write-Host "      Please click 'Yes' on the UAC prompt to continue uninstallation.`n" -ForegroundColor Cyan
-    Start-Sleep -Seconds 2
-    
-    $invokeCommand = "Get-Content -Path `"$PSCommandPath`" | Invoke-Expression"
-    $argsArray = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Normal -Command `"$invokeCommand`""
-    
-    try {
-        Start-Process powershell.exe -ArgumentList $argsArray -Verb RunAs -Wait
-    }
-    catch {
-        Write-Host "  [✗] Administrator privileges were denied. Uninstallation aborted." -ForegroundColor Red
-    }
+    Write-Host "`n  [✗] Administrator privileges are required to continue." -ForegroundColor Red
+    Write-Host "      Please open a new Terminal window as Administrator and run the command again." -ForegroundColor Yellow
+    Write-Host "      (Right-click the Start button -> 'Terminal (Admin)' or 'Windows PowerShell (Admin)')`n" -ForegroundColor Cyan
     return
 }
 
 # ── Logging & Output Helpers ─────────────────────────────────────────────────
-$global:EzLogFile = Join-Path $PWD "ez-cpp-uninstall.log"
+$global:EzLogFile = Join-Path $env:USERPROFILE "ez-cpp-uninstall.log"
+Write-Host "  [i] Saving logs to: $global:EzLogFile" -ForegroundColor DarkGray
 
 Add-Content -Path $global:EzLogFile -Value "`n=================================================="
 Add-Content -Path $global:EzLogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss.fff'))] [INFO] Starting EZ C/C++ Cleanup Tool"
