@@ -1,0 +1,296 @@
+{
+    "boilerplate": {
+        "prefix": "java",
+        "body": [
+            "public class ${TM_FILENAME_BASE} {",
+            "\tpublic static void main(String[] args) {",
+            "\t\t$1",
+            "\t}",
+            "}"
+        ],
+        "description": "Java boilerplate with main method"
+    },
+    "print": {
+        "prefix": "sout",
+        "body": [
+            "System.out.println($1);"
+        ],
+        "description": "System.out.println"
+    },
+    "print formatted": {
+        "prefix": "soutf",
+        "body": [
+            "System.out.printf(\"$1%n\", $2);"
+        ],
+        "description": "System.out.printf"
+    },
+    "scanner input": {
+        "prefix": "scin",
+        "body": [
+            "Scanner ${1:scanner} = new Scanner(System.in);",
+            "$0"
+        ],
+        "description": "Scanner for user input"
+    },
+    "scanner int": {
+        "prefix": "scint",
+        "body": [
+            "int ${1:num} = ${2:scanner}.nextInt();"
+        ],
+        "description": "Read integer from Scanner"
+    },
+    "scanner string": {
+        "prefix": "scstr",
+        "body": [
+            "String ${1:str} = ${2:scanner}.nextLine();"
+        ],
+        "description": "Read string from Scanner"
+    },
+    "scanner double": {
+        "prefix": "scdbl",
+        "body": [
+            "double ${1:num} = ${2:scanner}.nextDouble();"
+        ],
+        "description": "Read double from Scanner"
+    },
+    "for loop": {
+        "prefix": "fori",
+        "body": [
+            "for (int ${1:i} = 0; ${1:i} < ${2:length}; ${1:i}++) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "For loop with index"
+    },
+    "for each": {
+        "prefix": "fore",
+        "body": [
+            "for (${1:Type} ${2:item} : ${3:collection}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Enhanced for-each loop"
+    },
+    "try catch": {
+        "prefix": "tryc",
+        "body": [
+            "try {",
+            "\t$1",
+            "} catch (${2:Exception} ${3:e}) {",
+            "\t${4:e.printStackTrace();}",
+            "}"
+        ],
+        "description": "Try-catch block"
+    },
+    "new method": {
+        "prefix": "method",
+        "body": [
+            "public ${1:void} ${2:methodName}(${3}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Method declaration"
+    },
+    "new class": {
+        "prefix": "cls",
+        "body": [
+            "public class ${1:ClassName} {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Class declaration"
+    },
+    "constructor": {
+        "prefix": "ctor",
+        "body": [
+            "public ${TM_FILENAME_BASE}(${1}) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Constructor"
+    },
+    "arraylist": {
+        "prefix": "arrl",
+        "body": [
+            "ArrayList<${1:String}> ${2:list} = new ArrayList<>();"
+        ],
+        "description": "ArrayList declaration"
+    },
+    "hashmap": {
+        "prefix": "hmap",
+        "body": [
+            "HashMap<${1:String}, ${2:String}> ${3:map} = new HashMap<>();"
+        ],
+        "description": "HashMap declaration"
+    },
+    "competitive programming template": {
+        "prefix": "cp",
+        "body": [
+            "import java.util.*;",
+            "import java.io.*;",
+            "",
+            "public class ${TM_FILENAME_BASE} {",
+            "",
+            "\t// ==================== CONSTANTS ====================",
+            "\tstatic final int MOD = 1_000_000_007;",
+            "\tstatic final int MOD2 = 998_244_353;",
+            "\tstatic final long INF = Long.MAX_VALUE / 2;",
+            "\tstatic final int IINF = Integer.MAX_VALUE / 2;",
+            "",
+            "\t// ==================== FAST INPUT ====================",
+            "\tstatic class FastScanner {",
+            "\t\tprivate final BufferedReader br;",
+            "\t\tprivate StringTokenizer st;",
+            "",
+            "\t\tFastScanner() {",
+            "\t\t\tbr = new BufferedReader(new InputStreamReader(System.in));",
+            "\t\t}",
+            "",
+            "\t\tString next() throws IOException {",
+            "\t\t\twhile (st == null || !st.hasMoreTokens()) {",
+            "\t\t\t\tString line = br.readLine();",
+            "\t\t\t\tif (line == null) return null;",
+            "\t\t\t\tst = new StringTokenizer(line);",
+            "\t\t\t}",
+            "\t\t\treturn st.nextToken();",
+            "\t\t}",
+            "",
+            "\t\tint nextInt() throws IOException { return Integer.parseInt(next()); }",
+            "\t\tlong nextLong() throws IOException { return Long.parseLong(next()); }",
+            "\t\tdouble nextDouble() throws IOException { return Double.parseDouble(next()); }",
+            "\t\tString nextLine() throws IOException { return br.readLine(); }",
+            "",
+            "\t\tint[] nextArr(int n) throws IOException {",
+            "\t\t\tint[] arr = new int[n];",
+            "\t\t\tfor (int i = 0; i < n; i++) arr[i] = nextInt();",
+            "\t\t\treturn arr;",
+            "\t\t}",
+            "",
+            "\t\tlong[] nextLongArr(int n) throws IOException {",
+            "\t\t\tlong[] arr = new long[n];",
+            "\t\t\tfor (int i = 0; i < n; i++) arr[i] = nextLong();",
+            "\t\t\treturn arr;",
+            "\t\t}",
+            "\t}",
+            "",
+            "\t// ==================== UTILITIES ====================",
+            "\tstatic class Util {",
+            "\t\tstatic int max(int[] arr) { int m = arr[0]; for (int e : arr) m = Math.max(m, e); return m; }",
+            "\t\tstatic long max(long[] arr) { long m = arr[0]; for (long e : arr) m = Math.max(m, e); return m; }",
+            "\t\tstatic int min(int[] arr) { int m = arr[0]; for (int e : arr) m = Math.min(m, e); return m; }",
+            "\t\tstatic long min(long[] arr) { long m = arr[0]; for (long e : arr) m = Math.min(m, e); return m; }",
+            "\t\tstatic long sum(int[] arr) { long s = 0; for (int e : arr) s += e; return s; }",
+            "\t\tstatic long sum(long[] arr) { long s = 0; for (long e : arr) s += e; return s; }",
+            "",
+            "\t\tstatic void reverse(int[] arr) {",
+            "\t\t\tfor (int i = 0, j = arr.length - 1; i < j; i++, j--) {",
+            "\t\t\t\tint tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;",
+            "\t\t\t}",
+            "\t\t}",
+            "",
+            "\t\tstatic void reverse(long[] arr) {",
+            "\t\t\tfor (int i = 0, j = arr.length - 1; i < j; i++, j--) {",
+            "\t\t\t\tlong tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;",
+            "\t\t\t}",
+            "\t\t}",
+            "",
+            "\t\tstatic void sort(int[] arr) {",
+            "\t\t\tRandom rnd = new Random();",
+            "\t\t\tfor (int i = arr.length - 1; i > 0; i--) {",
+            "\t\t\t\tint j = rnd.nextInt(i + 1);",
+            "\t\t\t\tint tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;",
+            "\t\t\t}",
+            "\t\t\tArrays.sort(arr);",
+            "\t\t}",
+            "",
+            "\t\tstatic void sort(long[] arr) {",
+            "\t\t\tRandom rnd = new Random();",
+            "\t\t\tfor (int i = arr.length - 1; i > 0; i--) {",
+            "\t\t\t\tint j = rnd.nextInt(i + 1);",
+            "\t\t\t\tlong tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;",
+            "\t\t\t}",
+            "\t\t\tArrays.sort(arr);",
+            "\t\t}",
+            "",
+            "\t\tstatic long gcd(long a, long b) { return b == 0 ? a : gcd(b, a % b); }",
+            "\t\tstatic long lcm(long a, long b) { return a / gcd(a, b) * b; }",
+            "\t\tstatic long mod(long x, long m) { return ((x % m) + m) % m; }",
+            "",
+            "\t\tstatic long power(long base, long exp, long mod) {",
+            "\t\t\tlong result = 1; base %= mod;",
+            "\t\t\twhile (exp > 0) {",
+            "\t\t\t\tif ((exp & 1) == 1) result = result * base % mod;",
+            "\t\t\t\tbase = base * base % mod;",
+            "\t\t\t\texp >>= 1;",
+            "\t\t\t}",
+            "\t\t\treturn result;",
+            "\t\t}",
+            "",
+            "\t\tstatic long modInverse(long a, long mod) { return power(a, mod - 2, mod); }",
+            "",
+            "\t\tstatic boolean isPrime(long n) {",
+            "\t\t\tif (n < 2) return false;",
+            "\t\t\tif (n == 2 || n == 3) return true;",
+            "\t\t\tif (n % 2 == 0 || n % 3 == 0) return false;",
+            "\t\t\tfor (long i = 5; i * i <= n; i += 6)",
+            "\t\t\t\tif (n % i == 0 || n % (i + 2) == 0) return false;",
+            "\t\t\treturn true;",
+            "\t\t}",
+            "",
+            "\t\tstatic void printArr(int[] arr, StringBuilder out) {",
+            "\t\t\tfor (int i = 0; i < arr.length; i++) {",
+            "\t\t\t\tout.append(arr[i]);",
+            "\t\t\t\tout.append(i < arr.length - 1 ? \" \" : \"\\n\");",
+            "\t\t\t}",
+            "\t\t}",
+            "",
+            "\t\tstatic void printArr(long[] arr, StringBuilder out) {",
+            "\t\t\tfor (int i = 0; i < arr.length; i++) {",
+            "\t\t\t\tout.append(arr[i]);",
+            "\t\t\t\tout.append(i < arr.length - 1 ? \" \" : \"\\n\");",
+            "\t\t\t}",
+            "\t\t}",
+            "\t}",
+            "",
+            "\t// ==================== OUTPUT ====================",
+            "\tstatic StringBuilder out = new StringBuilder();",
+            "",
+            "\tstatic void yes() { out.append(\"YES\\n\"); }",
+            "\tstatic void no() { out.append(\"NO\\n\"); }",
+            "",
+            "\tstatic void print(int x) { out.append(x); }",
+            "\tstatic void print(long x) { out.append(x); }",
+            "\tstatic void print(String s) { out.append(s); }",
+            "\tstatic void print(Object o) { out.append(o); }",
+            "\tstatic void print(char c) { out.append(c); }",
+            "",
+            "\tstatic void println() { out.append(\"\\n\"); }",
+            "\tstatic void println(int x) { out.append(x).append(\"\\n\"); }",
+            "\tstatic void println(long x) { out.append(x).append(\"\\n\"); }",
+            "\tstatic void println(String s) { out.append(s).append(\"\\n\"); }",
+            "\tstatic void println(Object o) { out.append(o).append(\"\\n\"); }",
+            "\tstatic void println(char c) { out.append(c).append(\"\\n\"); }",
+            "",
+            "\tstatic void printArr(int[] arr) { Util.printArr(arr, out); }",
+            "\tstatic void printArr(long[] arr) { Util.printArr(arr, out); }",
+            "",
+            "\t// ==================== MAIN ====================",
+            "\tpublic static void main(String[] args) throws Exception {",
+            "\t\tFastScanner fs = new FastScanner();",
+            "",
+            "\t\tint t = fs.nextInt(); // comment this if no test cases",
+            "\t\twhile (t-- > 0) {",
+            "\t\t\tsolve(fs);",
+            "\t\t}",
+            "",
+            "\t\tSystem.out.print(out);",
+            "\t}",
+            "",
+            "\tstatic void solve(FastScanner fs) throws Exception {",
+            "\t\t$0",
+            "\t}",
+            "}"
+        ],
+        "description": "Competitive programming template with FastScanner, utilities, and output helpers"
+    }
+}

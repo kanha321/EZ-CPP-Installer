@@ -1,0 +1,56 @@
+{
+    "boilerPlate code": {
+        "prefix": "c",
+        "body": [
+            "#include<stdio.h>",
+            "#include<conio.h>",
+            "",
+            "void main() {",
+            "\t$1",
+            "}"
+        ],
+        "description": "boilerPlate Code for c"
+    },
+    "printf": {
+        "prefix": "pf",
+        "body": [
+            "printf(\"$1\");"
+        ],
+        "description": "print function"
+    },
+    "printf with \\n": {
+        "prefix": "pl",
+        "body": [
+            "printf(\"$1\\n\");"
+        ],
+        "description": "print function with new line"
+    },
+    "scan int": {
+        "prefix": "si",
+        "body": [
+            "scanf(\"%d\", &$1);"
+        ],
+        "description": "scan function for int"
+    },
+    "scan float": {
+        "prefix": "sf",
+        "body": [
+            "scanf(\"%f\", &$1);"
+        ],
+        "description": "scan function for float"
+    },
+    "scan char": {
+        "prefix": "sc",
+        "body": [
+            "scanf(\"%c\", &$1);"
+        ],
+        "description": "scan function for char"
+    },
+    "scan double": {
+        "prefix": "sd",
+        "body": [
+            "scanf(\"%lf\", &$1);"
+        ],
+        "description": "scan function for double"
+    }
+}

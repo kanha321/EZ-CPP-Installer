@@ -1,0 +1,225 @@
+{
+    "boilerPlate code": {
+        "prefix": "cpp",
+        "body": [
+            "#include<iostream>",
+            "using namespace std;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp"
+    },
+    "boilerPlate code with all header files": {
+        "prefix": "cppall",
+        "body": [
+            "#include<bits/stdc++.h>",
+            "using namespace std;",
+            "#define _USE_MATH_DEFINES",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with everything"
+    },
+    "boilerPlate code with math": {
+        "prefix": "cppmath",
+        "body": [
+            "#include<iostream>",
+            "#include<cmath>",
+            "#define _USE_MATH_DEFINES",
+            "using std::cout;",
+            "using std::cin;",
+            "using std::endl;",
+            "using std::string;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with math header"
+    },
+    "boilerPlate code with vector": {
+        "prefix": "cppvector",
+        "body": [
+            "#include<iostream>",
+            "#include<vector>",
+            "using std::cout;",
+            "using std::cin;",
+            "using std::endl;",
+            "using std::string;",
+            "using std::vector;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with vector"
+    },
+    "boilerPlate code with stdlib and time header": {
+        "prefix": "cpptime",
+        "body": [
+            "#include<iostream>",
+            "#include<cstdlib>",
+            "#include<ctime>",
+            "using std::cout;",
+            "using std::cin;",
+            "using std::endl;",
+            "using std::string;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with stdlib and time header"
+    },
+    "boilerPlate code with stdlib header": {
+        "prefix": "cppstdlib",
+        "body": [
+            "#include<iostream>",
+            "#include<cstdlib>",
+            "using std::cout;",
+            "using std::cin;",
+            "using std::endl;",
+            "using std::string;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with stdlib header"
+    },
+    "boilerPlate code with limits header": {
+        "prefix": "cpplimits",
+        "body": [
+            "#include<iostream>",
+            "#include<climits>",
+            "using std::cout;",
+            "using std::cin;",
+            "using std::endl;",
+            "using std::string;",
+            "",
+            "int main(){",
+            "\t$1",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "boilerPlate Code for cpp with limits header"
+    },
+    "cout": {
+        "prefix": "co",
+        "body": [
+            "cout<<\"$1\"<<endl;"
+        ],
+        "description": "console output"
+    },
+    "cin": {
+        "prefix": "ci",
+        "body": [
+            "cin>>$1;"
+        ],
+        "description": "console input"
+    },
+    "input": {
+        "prefix": "input",
+        "body": [
+            "cout<<\"enter the number$1: \";",
+            "cin>>$2;"
+        ],
+        "description": "user input"
+    },
+    "competitive programming template": {
+        "prefix": "cp",
+        "body": [
+            "#include<bits/stdc++.h>",
+            "using namespace std;",
+            "#define _USE_MATH_DEFINES",
+            "",
+            "// ==================== TYPES & MACROS ====================",
+            "typedef long long ll;",
+            "typedef pair<int,int> pii;",
+            "typedef pair<ll,ll> pll;",
+            "typedef vector<int> vi;",
+            "typedef vector<ll> vl;",
+            "typedef vector<pii> vpii;",
+            "#define pb push_back",
+            "#define all(x) (x).begin(), (x).end()",
+            "#define sz(x) (int)(x).size()",
+            "#define F first",
+            "#define S second",
+            "",
+            "// ==================== CONSTANTS ====================",
+            "const int MOD = 1e9 + 7;",
+            "const int MOD2 = 998244353;",
+            "const ll INF = LLONG_MAX / 2;",
+            "const int IINF = INT_MAX / 2;",
+            "",
+            "// ==================== UTILITIES ====================",
+            "ll gcd(ll a, ll b) { return b == 0 ? a : gcd(b, a % b); }",
+            "ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }",
+            "ll mod(ll x, ll m) { return ((x % m) + m) % m; }",
+            "",
+            "ll power(ll base, ll exp, ll mod) {",
+            "\tll result = 1; base %= mod;",
+            "\twhile (exp > 0) {",
+            "\t\tif (exp & 1) result = result * base % mod;",
+            "\t\tbase = base * base % mod;",
+            "\t\texp >>= 1;",
+            "\t}",
+            "\treturn result;",
+            "}",
+            "",
+            "ll modInverse(ll a, ll mod) { return power(a, mod - 2, mod); }",
+            "",
+            "bool isPrime(ll n) {",
+            "\tif (n < 2) return false;",
+            "\tif (n == 2 || n == 3) return true;",
+            "\tif (n % 2 == 0 || n % 3 == 0) return false;",
+            "\tfor (ll i = 5; i * i <= n; i += 6)",
+            "\t\tif (n % i == 0 || n % (i + 2) == 0) return false;",
+            "\treturn true;",
+            "}",
+            "",
+            "// shuffle before sort to avoid worst-case O(n^2)",
+            "void ssort(vi &arr) {",
+            "\tmt19937 rng(chrono::steady_clock::now().time_since_epoch().count());",
+            "\tshuffle(all(arr), rng);",
+            "\tsort(all(arr));",
+            "}",
+            "",
+            "void ssort(vl &arr) {",
+            "\tmt19937 rng(chrono::steady_clock::now().time_since_epoch().count());",
+            "\tshuffle(all(arr), rng);",
+            "\tsort(all(arr));",
+            "}",
+            "",
+            "// ==================== SOLVE ====================",
+            "void solve() {",
+            "\t$0",
+            "}",
+            "",
+            "// ==================== MAIN ====================",
+            "int main() {",
+            "\tios::sync_with_stdio(false);",
+            "\tcin.tie(nullptr);",
+            "",
+            "\tint t;",
+            "\tcin >> t; // comment this if no test cases",
+            "\twhile (t--) {",
+            "\t\tsolve();",
+            "\t}",
+            "",
+            "\treturn 0;",
+            "}"
+        ],
+        "description": "Competitive programming template with fast I/O, utilities, and multi-test-case solve"
+    }
+}
