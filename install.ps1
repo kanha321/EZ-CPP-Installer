@@ -37,7 +37,7 @@ Add-Content -Path $global:EzLogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd H
 
 # ── URLs (single source of truth) ───────────────────────────────────────────
 $script:RepoBaseUrl = "https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main"
-$script:ReleaseUrl  = "https://github.com/kanha321/EZ-CPP-Installer/releases/download/v6.0"
+$script:ReleaseUrl  = "https://github.com/kanha321/EZ-CPP-Installer/releases/download/6.0"
 
 # ── Download & Load Modules ─────────────────────────────────────────────────
 $modulesDir = Join-Path $env:TEMP "ez-cpp-modules"
