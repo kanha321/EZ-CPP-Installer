@@ -1,13 +1,29 @@
+<div align="center">
+
 # EZ CPP 😎
 
-## Table of Contents
-- [What It Automates](#what-it-automates)
-- [Requirements](#requirements)
-- [Installation Procedure](#installation-procedure)
-- [Uninstallation Procedure](#uninstallation-procedure)
-- [Project History](#📜-project-history)
+[![Version](https://img.shields.io/github/v/release/kanha321/EZ-CPP-Installer?style=for-the-badge&color=blue)](https://github.com/kanha321/EZ-CPP-Installer/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows_10_%7C_11_(64--bit)-0078D4?style=for-the-badge&logo=windows)](https://microsoft.com/windows)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?style=for-the-badge&logo=powershell)](https://docs.microsoft.com/powershell/)
+[![GCC](https://img.shields.io/badge/GCC-14%2B_(UCRT64)-00599C?style=for-the-badge&logo=cplusplus)](https://gcc.gnu.org/)
 
-## What It Automates
+**A one-command, fully automated installer for a complete C/C++ Development Environment on Windows.**  
+*(Specially designed for **Competitive Programming** efficiency!)*
+
+---
+
+</div>
+
+## 📌 Table of Contents
+- [What It Automates](#-what-it-automates)
+- [Requirements](#-requirements)
+- [Installation Procedure](#-installation-procedure)
+- [Uninstallation Procedure](#-uninstallation-procedure)
+- [Project History](#-project-history)
+
+---
+
+## ⚡ What It Automates
 
 ### This program streamlines the setup process for the following tasks:
 *(Specially designed for **Competitive Programming** efficiency!)*
@@ -26,16 +42,22 @@
 > - ~~An older version of VS Code is available in `v3.0` to ensure compatibility with older versions of Windows, specifically Windows 7.~~
 > - ~~Looking for a way to install Visual Studio Code via winget with the "Open with Code" context menu option. This would reduce installer size and truly automate the setup while avoiding manual registry edits, though it will require internet access.~~
 
-## Requirements
+---
 
-- **Supported OS**: Windows 10 (64-bit) or Windows 11 (64-bit).
-- **PowerShell**: Windows PowerShell 5.1 or higher (pre-installed on all Windows 10/11 PCs out-of-the-box).
-- **Internet**: Active internet connection required to download GCC compiler, VS Code, and extensions.
+## 📋 Requirements
 
-## Installation Procedure  [(Download↓)](https://github.com/kanha321/EZ-CPP-Installer/releases)
+| Requirement | Specification |
+| :--- | :--- |
+| **Supported OS** | Windows 10 (64-bit) or Windows 11 (64-bit) |
+| **PowerShell** | Windows PowerShell 5.1 or higher *(pre-installed on all Windows 10/11 PCs out-of-the-box)* |
+| **Internet** | Active internet connection required to download GCC compiler, VS Code, and extensions |
 
-~~1. Extract the zip file~~
-~~2. Run the "install-c" file.~~
+---
+
+## 🚀 Installation Procedure  [(Download↓)](https://github.com/kanha321/EZ-CPP-Installer/releases)
+
+~~1. Extract the zip file~~  
+~~2. Run the "install-c" file.~~  
 ~~3. During the VS Code installation, ensure all 5 checkboxes are selected.~~
 
 **New in Version 6.0!** Run everything effortlessly.
@@ -52,7 +74,9 @@ irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/install.ps1
 
 That's it! Enjoy your streamlined setup. 😎
 
-## Uninstallation Procedure
+---
+
+## 🧹 Uninstallation Procedure
 
 To clean up or reset your C/C++ environment:
 
@@ -64,6 +88,8 @@ Open **Terminal (Admin)** or **PowerShell (Admin)** and run:
 ```powershell
 irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/uninstaller/uninstall.ps1 | iex
 ```
+
+---
 
 ## 📜 Project History
 
