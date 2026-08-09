@@ -3,6 +3,7 @@
 ## Table of Contents
 - [What It Automates](#what-it-automates)
 - [Installation Procedure](#installation-procedure)
+- [Uninstallation Procedure](#uninstallation-procedure)
 - [Project History](#📜-project-history)
 
 ## What It Automates
@@ -43,6 +44,19 @@ irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/install.ps1
 ```
 
 That's it! Enjoy your streamlined setup. 😎
+
+## Uninstallation Procedure
+
+To clean up or reset your C/C++ environment:
+
+### Option 1: Simple Double-Click
+Double-click **`uninstall.bat`** (automatically requests Administrator rights).
+
+### Option 2: One-Line Command
+Open **Terminal** or **PowerShell** and run:
+```powershell
+irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/uninstaller/uninstall.ps1 | iex
+```
 
 ## 📜 Project History
 
