@@ -2,6 +2,7 @@
 
 ## Table of Contents
 - [What It Automates](#what-it-automates)
+- [Requirements](#requirements)
 - [Installation Procedure](#installation-procedure)
 - [Uninstallation Procedure](#uninstallation-procedure)
 - [Project History](#📜-project-history)
@@ -24,6 +25,12 @@
 > - ~~VS Code needs to be installed manually. Automating this step would increase the program size to over 400MB and potentially decrease stability.~~
 > - ~~An older version of VS Code is available in `v3.0` to ensure compatibility with older versions of Windows, specifically Windows 7.~~
 > - ~~Looking for a way to install Visual Studio Code via winget with the "Open with Code" context menu option. This would reduce installer size and truly automate the setup while avoiding manual registry edits, though it will require internet access.~~
+
+## Requirements
+
+- **Supported OS**: Windows 10 (64-bit) or Windows 11 (64-bit).
+- **PowerShell**: Windows PowerShell 5.1 or higher (pre-installed on all Windows 10/11 PCs out-of-the-box).
+- **Internet**: Active internet connection required to download GCC compiler, VS Code, and extensions.
 
 ## Installation Procedure  [(Download↓)](https://github.com/kanha321/EZ-CPP-Installer/releases)
 
