@@ -38,7 +38,7 @@
 2. Double-click **`install.bat`** (automatically requests Administrator rights).
 
 ### Option 2: One-Line Command
-Open **Terminal** or **PowerShell** and run:
+Open **Terminal (Admin)** or **PowerShell (Admin)** and run:
 ```powershell
 irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/install.ps1 | iex
 ```
@@ -53,7 +53,7 @@ To clean up or reset your C/C++ environment:
 Double-click **`uninstall.bat`** (automatically requests Administrator rights).
 
 ### Option 2: One-Line Command
-Open **Terminal** or **PowerShell** and run:
+Open **Terminal (Admin)** or **PowerShell (Admin)** and run:
 ```powershell
 irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/uninstaller/uninstall.ps1 | iex
 ```
