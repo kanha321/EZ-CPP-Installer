@@ -18,11 +18,70 @@ function Write-Log {
     Add-Content -Path $global:EzLogFile -Value $logEntry -ErrorAction SilentlyContinue
 }
 
-function Write-Step { param([string]$msg) Write-Host "  [*] $msg" -ForegroundColor Cyan; Write-Log "INFO" $msg }
-function Write-Ok { param([string]$msg) Write-Host "  [✓] $msg" -ForegroundColor Green; Write-Log "INFO" $msg }
-function Write-Warn { param([string]$msg) Write-Host "  [!] $msg" -ForegroundColor Yellow; Write-Log "WARN" $msg }
-function Write-Err { param([string]$msg) Write-Host "  [✗] $msg" -ForegroundColor Red; Write-Log "ERROR" $msg }
-function Write-Info { param([string]$msg) Write-Host "      $msg" -ForegroundColor DarkGray; Write-Log "DEBUG" $msg }
+function Write-Step {
+    param([string]$msg)
+    $time = Get-Date -Format "HH:mm:ss"
+    if ($global:EzVerbose) { Write-Host "  [*] [$time] $msg" -ForegroundColor Cyan } else { Write-Host "  [*] $msg" -ForegroundColor Cyan }
+    Write-Log "STEP" $msg
+}
+function Write-Ok {
+    param([string]$msg)
+    $time = Get-Date -Format "HH:mm:ss"
+    if ($global:EzVerbose) { Write-Host "  [+] [$time] $msg" -ForegroundColor Green } else { Write-Host "  [+] $msg" -ForegroundColor Green }
+    Write-Log "SUCCESS" $msg
+}
+function Write-Warn {
+    param([string]$msg)
+    $time = Get-Date -Format "HH:mm:ss"
+    if ($global:EzVerbose) { Write-Host "  [!] [$time] $msg" -ForegroundColor Yellow } else { Write-Host "  [!] $msg" -ForegroundColor Yellow }
+    Write-Log "WARN" $msg
+}
+function Write-Err {
+    param([string]$msg)
+    $time = Get-Date -Format "HH:mm:ss"
+    if ($global:EzVerbose) { Write-Host "  [-] [$time] $msg" -ForegroundColor Red } else { Write-Host "  [-] $msg" -ForegroundColor Red }
+    Write-Log "ERROR" $msg
+}
+function Write-Info {
+    param([string]$msg)
+    $time = Get-Date -Format "HH:mm:ss"
+    if ($global:EzVerbose -or $VerbosePreference -eq 'Continue') {
+        Write-Host "      [$time] $msg" -ForegroundColor DarkGray
+    }
+    Write-Log "DEBUG" $msg
+}
+
+# ── Retry Wrapper ────────────────────────────────────────────────────────────
+
+function Invoke-WithRetry {
+    <#
+    .SYNOPSIS
+        Retries a script block up to MaxAttempts times with a delay between attempts.
+    #>
+    param(
+        [Parameter(Mandatory)][scriptblock]$Action,
+        [int]$MaxAttempts = 3,
+        [int]$DelaySeconds = 2,
+        [string]$Label = "operation"
+    )
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        try {
+            Write-Info "Executing $Label (attempt $attempt/$MaxAttempts)..."
+            $res = (& $Action)
+            Write-Info "$Label attempt $attempt succeeded."
+            return $res
+        }
+        catch {
+            if ($attempt -eq $MaxAttempts) {
+                Write-Err "$Label failed after $MaxAttempts attempts: $_"
+                throw
+            }
+            Write-Warn "$Label failed (attempt $attempt/$MaxAttempts): $_. Retrying in ${DelaySeconds}s..."
+            Start-Sleep -Seconds $DelaySeconds
+        }
+    }
+}
 
 # ── 7za.exe Management ──────────────────────────────────────────────────────
 # Downloads the standalone 7-Zip console extractor if not already present.
@@ -37,25 +96,30 @@ function Get-7zaPath {
         String - absolute path to 7za.exe
     #>
     if ($script:SevenZaPath -and (Test-Path $script:SevenZaPath)) {
+        Write-Info "Using cached 7za.exe path: $script:SevenZaPath"
         return $script:SevenZaPath
     }
 
     $tempDir = Join-Path $env:TEMP "ez-cpp-installer"
     if (-not (Test-Path $tempDir)) {
         New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+        Write-Info "Created temporary directory: $tempDir"
     }
 
     $sevenZaExe = Join-Path $tempDir "7za.exe"
 
     if (Test-Path $sevenZaExe) {
+        Write-Info "Found 7za.exe in temp: $sevenZaExe ($((Get-Item $sevenZaExe).Length) bytes)"
         $script:SevenZaPath = $sevenZaExe
         return $sevenZaExe
     }
     
     try {
+        Write-Info "Downloading 7za.exe from: $script:SevenZaUrl"
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri $script:SevenZaUrl -OutFile $sevenZaExe -UseBasicParsing
         $ProgressPreference = 'Continue'
+        Write-Info "7za.exe downloaded successfully ($((Get-Item $sevenZaExe).Length) bytes)"
     }
     catch {
         Write-Err "Failed to download 7za.exe: $_"
@@ -69,14 +133,17 @@ function Get-7zaPath {
 function Remove-7za {
     <#
     .SYNOPSIS
-        Cleans up the temporary 7za.exe and its directory.
+        Cleans up 7za.exe from the temporary directory.
     #>
     $tempDir = Join-Path $env:TEMP "ez-cpp-installer"
     if (Test-Path $tempDir) {
         Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Info "Cleaned up temporary 7za directory: $tempDir"
     }
     $script:SevenZaPath = $null
 }
+
+# ── Process Runner with Animation ────────────────────────────────────────────
 
 function Invoke-WithBounceProgress {
     <#
@@ -92,7 +159,14 @@ function Invoke-WithBounceProgress {
     $tempOut = Join-Path $env:TEMP "ez-cmd-out.log"
     $tempErr = Join-Path $env:TEMP "ez-cmd-err.log"
 
+    Write-Info "Executing: '$FilePath' $($ArgumentList -join ' ')"
+    Write-Info "Redirecting Stdout to: $tempOut"
+    Write-Info "Redirecting Stderr to: $tempErr"
+
+    $startTime = Get-Date
     $proc = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+
+    Write-Info "Process started with PID: $($proc.Id)"
 
     $width = 12
     $pos = 0
@@ -112,16 +186,44 @@ function Invoke-WithBounceProgress {
         Start-Sleep -Milliseconds 40
     }
 
+    $duration = (Get-Date) - $startTime
     $spaces = " " * ($Message.Length + $width + 15)
     Write-Host -NoNewline "`r$spaces`r"
 
-    if ($proc.ExitCode -eq 0) {
+    # Ensure exit code is fully populated (Inno Setup spawns child processes)
+    $proc.WaitForExit()
+    $exitCode = $proc.ExitCode
+
+    Write-Info "Process PID $($proc.Id) finished in $([math]::Round($duration.TotalSeconds, 2))s with ExitCode: $exitCode"
+
+    # Read and print Stdout / Stderr (verbose-only for success, always on failure)
+    if (Test-Path $tempOut) {
+        $outText = Get-Content $tempOut -Raw
+        if ($outText -and $outText.Trim()) {
+            Write-Info "=== Process Stdout Output ==="
+            $outText.Trim().Split("`n") | ForEach-Object { Write-Info "  [OUT] $($_.Trim())" }
+        }
+    }
+    $stderrContent = $null
+    if (Test-Path $tempErr) {
+        $stderrContent = Get-Content $tempErr -Raw
+        if ($stderrContent -and $stderrContent.Trim()) {
+            # Only show stderr in verbose mode; on failure it gets shown below
+            Write-Info "=== Process Stderr Output ==="
+            $stderrContent.Trim().Split("`n") | ForEach-Object { Write-Info "  [ERR] $($_.Trim())" }
+        }
+    }
+
+    # Treat null exit code as success (Inno Setup child process case)
+    if ($null -eq $exitCode -or $exitCode -eq 0 -or $exitCode -eq 3000) {
         return $true
     }
     else {
-        if (Test-Path $tempErr) {
-            $errText = (Get-Content $tempErr -Raw).Trim()
-            if ($errText) { Write-Warn "Process output: $errText" }
+        Write-Warn "Process failed with ExitCode $exitCode"
+        # Show stderr on failure even in non-verbose mode
+        if (-not $global:EzVerbose -and $stderrContent -and $stderrContent.Trim()) {
+            Write-Warn "=== Process Stderr Output ==="
+            $stderrContent.Trim().Split("`n") | ForEach-Object { Write-Warn "  [ERR] $($_.Trim())" }
         }
         return $false
     }
@@ -156,12 +258,8 @@ function Expand-7zArchive {
         $argsArray = @("x", "`"$ArchivePath`"", "-o`"$DestinationPath`"", "-y", "-bsp1")
         $proc = Start-Process -FilePath $sevenZa -ArgumentList $argsArray -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
 
-        $barWidth = 40
-        $foodArray = @()
-        for ($i = 0; $i -lt $barWidth; $i++) {
-            $foodArray += if ($i % 2 -eq 0) { "o" } else { " " }
-        }
-        $pacman = [PSCustomObject]@{ Value = "C" }
+        $ps = New-PacmanState
+        $barWidth = $ps.BarWidth; $foodArray = $ps.FoodArray; $pacman = $ps.Pacman
         
         $percent = 0
         while (-not $proc.HasExited) {
@@ -204,6 +302,23 @@ function Expand-7zArchive {
 }
 
 # ── Pac-Man Download Progress Bar ────────────────────────────────────────────
+
+function New-PacmanState {
+    <#
+    .SYNOPSIS
+        Creates a fresh Pac-Man progress bar state (food array and mouth toggle).
+    #>
+    param([int]$BarWidth = 40)
+    $foodArray = @()
+    for ($i = 0; $i -lt $BarWidth; $i++) {
+        $foodArray += if ($i % 2 -eq 0) { "o" } else { " " }
+    }
+    return @{
+        FoodArray = $foodArray
+        Pacman    = [PSCustomObject]@{ Value = "C" }
+        BarWidth  = $BarWidth
+    }
+}
 
 function Show-PacmanProgress {
     <#
@@ -254,11 +369,10 @@ function Show-PacmanProgress {
 
     $eaten = [int](($percent / 100) * $BarWidth)
 
-    # Pac-Man mouth animation
-    if ($eaten -lt $BarWidth -and $eaten -ge 0) {
-        $nextChar = $FoodArray[$eaten]
-        $PacmanState.Value = if ($nextChar -eq " ") { "C" } else { "c" }
-    }
+    # Pac-Man mouth animation (toggles C <-> c every 750ms based on wall-clock time)
+    $ticks = [Environment]::TickCount
+    $isMouthOpen = ([math]::Floor([math]::Abs($ticks) / 750) % 2 -eq 0)
+    $pacmanChar = if ($isMouthOpen) { "C" } else { "c" }
 
     # Build the bar
     if ($eaten -ge $BarWidth) {
@@ -272,7 +386,7 @@ function Show-PacmanProgress {
         else {
             $remainingFood = ""
         }
-        $barContents = "$trail$($PacmanState.Value)$remainingFood".TrimEnd().PadRight($BarWidth)
+        $barContents = "$trail$pacmanChar$remainingFood".TrimEnd().PadRight($BarWidth)
     }
 
     $bar = "      [$barContents]"
@@ -319,16 +433,12 @@ function Invoke-DownloadWithProgress {
 
         $stream = $response.GetResponseStream()
         $output = [System.IO.File]::Create($OutputPath)
-        $buffer = New-Object byte[] 8192
+        $buffer = New-Object byte[] 524288  # 512 KB buffer (150 updates total for 77MB, great balance)
         $totalRead = [long]0
 
         # Setup Pac-Man bar
-        $barWidth = 40
-        $foodArray = @()
-        for ($i = 0; $i -lt $barWidth; $i++) {
-            $foodArray += if ($i % 2 -eq 0) { "o" } else { " " }
-        }
-        $pacman = [PSCustomObject]@{ Value = "C" }
+        $ps = New-PacmanState
+        $barWidth = $ps.BarWidth; $foodArray = $ps.FoodArray; $pacman = $ps.Pacman
 
         # Download loop
         while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {

@@ -2,16 +2,10 @@
 .SYNOPSIS
     Central configuration constants for EZ C/C++ Installer.
 .DESCRIPTION
-    All URLs, paths, extension lists, and config file mappings in one place.
-    Change these to switch between local testing and production.
+    All paths, extension lists, and config file mappings in one place.
+    URLs are set by install.ps1 before this module is loaded.
 #>
 
-# ── Base URLs ────────────────────────────────────────────────────────────────
-# For production, use:
-#   $script:RepoBaseUrl   = "https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main"
-#   $script:ReleaseUrl    = "https://github.com/kanha321/EZ-CPP-Installer/releases/download/v6.0"
-$script:RepoBaseUrl = "http://localhost:8000"
-$script:ReleaseUrl = "http://localhost:8000"
 
 # ── MinGW ────────────────────────────────────────────────────────────────────
 $script:MingwArchiveUrl = "$script:ReleaseUrl/MinGW14.7z"
@@ -19,7 +13,7 @@ $script:MingwInstallDir = "C:\MinGW14"
 $script:MingwBinPath = "C:\MinGW14\bin"
 
 # ── 7za ──────────────────────────────────────────────────────────────────────
-$script:SevenZaUrl = "$script:ReleaseUrl/7za.exe"
+$script:SevenZaUrl = "$script:RepoBaseUrl/7za.exe"
 
 # ── VS Code ──────────────────────────────────────────────────────────────────
 $script:VSCodeInstallerUrl = "https://update.code.visualstudio.com/latest/win32-x64/stable"

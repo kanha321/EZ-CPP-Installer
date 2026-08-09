@@ -4,6 +4,13 @@
     Cleans up the development environment for testing/removal purposes.
 #>
 
+[CmdletBinding()]
+param()
+
+if ($PSBoundParameters.ContainsKey('Verbose') -or $VerbosePreference -eq 'Continue') {
+    $global:EzVerbose = $true
+}
+
 # ── Check Administrator Privileges ────────────────────────────────────────────
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
@@ -28,112 +35,139 @@ function Write-Log {
 }
 
 function Write-Step { param([string]$msg) Write-Host "  [*] $msg" -ForegroundColor Cyan; Write-Log "INFO" $msg }
-function Write-Ok { param([string]$msg) Write-Host "  [✓] $msg" -ForegroundColor Green; Write-Log "INFO" $msg }
+function Write-Ok { param([string]$msg) Write-Host "  [+] $msg" -ForegroundColor Green; Write-Log "INFO" $msg }
 function Write-Warn { param([string]$msg) Write-Host "  [!] $msg" -ForegroundColor Yellow; Write-Log "WARN" $msg }
 function Write-Info { param([string]$msg) Write-Host "      $msg" -ForegroundColor DarkGray; Write-Log "DEBUG" $msg }
 
 function Invoke-WithBounceProgress {
-    <#
-    .SYNOPSIS
-        Executes a background process and displays a dancing bouncing line animation.
-    #>
     param(
         [Parameter(Mandatory)][string]$Message,
         [Parameter(Mandatory)][string]$FilePath,
         [Parameter(Mandatory)][string[]]$ArgumentList
     )
-
-    $tempOut = Join-Path $env:TEMP "ez-cmd-out.log"
-    $tempErr = Join-Path $env:TEMP "ez-cmd-err.log"
-
-    $proc = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -PassThru -WindowStyle Hidden -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
-
-    $width = 12
-    $pos = 0
-    $dir = 1
-
+    $proc = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -PassThru -WindowStyle Hidden -RedirectStandardOutput ([IO.Path]::GetTempFileName()) -RedirectStandardError ([IO.Path]::GetTempFileName())
+    $width = 12; $pos = 0; $dir = 1
     while (-not $proc.HasExited) {
-        $arr = [char[]]("_" * $width)
-        $arr[$pos] = "-"
-        $frame = $arr -join ""
-        
-        Write-Host -NoNewline "`r  [*] $Message [$frame]"
-        
+        $arr = [char[]]("_" * $width); $arr[$pos] = "-"
+        Write-Host -NoNewline "`r  [*] $Message [$($arr -join '')]"
         $pos += $dir
-        if ($pos -ge $width - 1) { $dir = -1 }
-        elseif ($pos -le 0) { $dir = 1 }
-        
+        if ($pos -ge $width - 1) { $dir = -1 } elseif ($pos -le 0) { $dir = 1 }
         Start-Sleep -Milliseconds 40
     }
-
-    $spaces = " " * ($Message.Length + $width + 15)
-    Write-Host -NoNewline "`r$spaces`r"
-
-    if ($proc.ExitCode -eq 0) {
-        return $true
-    }
-    else {
-        if (Test-Path $tempErr) {
-            $errContent = Get-Content $tempErr -Raw
-            if ($null -ne $errContent) {
-                $errText = $errContent.Trim()
-                if ($errText) { Write-Warn "Process output: $errText" }
-            }
-        }
-        return $false
-    }
+    Write-Host -NoNewline ("`r" + (" " * ($Message.Length + $width + 15)) + "`r")
+    return ($proc.ExitCode -eq 0)
 }
 
+function Remove-PathEntries {
+    <#
+    .SYNOPSIS
+        Removes matching entries from a PATH variable (case-insensitive),
+        deduplicates remaining entries, and writes back to the registry.
+    .PARAMETER Target
+        'User' or 'Machine' environment variable target.
+    .PARAMETER Pattern
+        Regex pattern to match entries to remove (case-insensitive).
+    .PARAMETER Label
+        Display label for logging (e.g., "MinGW", "VS Code").
+    .OUTPUTS
+        Boolean - $true if entries were removed, $false if nothing matched.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$Target,
+        [Parameter(Mandatory)][string]$Pattern,
+        [Parameter(Mandatory)][string]$Label
+    )
+
+    $envTarget = if ($Target -eq 'User') { [EnvironmentVariableTarget]::User } else { [EnvironmentVariableTarget]::Machine }
+    $currentPath = [Environment]::GetEnvironmentVariable("Path", $envTarget)
+
+    if (-not $currentPath) { return }
+
+    # Split, deduplicate (case-insensitive, preserve first occurrence)
+    $seen = @{}
+    $pathParts = @()
+    foreach ($entry in ($currentPath -split ';')) {
+        $trimmed = $entry.Trim()
+        if (-not $trimmed) { continue }
+        $key = $trimmed.ToLower()
+        if (-not $seen.ContainsKey($key)) {
+            $seen[$key] = $true
+            $pathParts += $trimmed
+        }
+    }
+
+    $beforeCount = $pathParts.Count
+    $cleaned = $pathParts | Where-Object { $_ -notmatch $Pattern }
+
+    if ($cleaned.Count -lt $beforeCount) {
+        $removed = $beforeCount - $cleaned.Count
+        [Environment]::SetEnvironmentVariable("Path", ($cleaned -join ';'), $envTarget)
+        Write-Ok "$Label removed from $Target PATH - $removed duplicate/stale entries cleaned."
+        return
+    }
+
+    Write-Ok "$Label absent from $Target PATH (already clean)."
+}
+
+# ── Banner ───────────────────────────────────────────────────────────────────
 Clear-Host
 Write-Host ""
-Write-Host "  ╔══════════════════════════════════════════╗" -ForegroundColor Red
-Write-Host "  ║                                          ║" -ForegroundColor Red
-Write-Host "  ║      EZ C/C++ Cleanup Tool               ║" -ForegroundColor Red
-Write-Host "  ║                                          ║" -ForegroundColor Red
-Write-Host "  ╚══════════════════════════════════════════╝" -ForegroundColor Red
+Write-Host "  +------------------------------------------+" -ForegroundColor Red
+Write-Host "  |                                          |" -ForegroundColor Red
+Write-Host "  |      EZ C/C++ Cleanup Tool               |" -ForegroundColor Red
+Write-Host "  |                                          |" -ForegroundColor Red
+Write-Host "  +------------------------------------------+" -ForegroundColor Red
 Write-Host ""
 
-$removeMingw = Read-Host "  Remove MinGW GCC 14 (C:\MinGW14)? [Y/N]"
-$removeVscode = Read-Host "  Remove VS Code and ALL extensions/settings? [Y/N]"
+$removeMingw = Read-Host "  Remove MinGW GCC 14 (C:\MinGW14)? [y/N]"
+if ([string]::IsNullOrWhiteSpace($removeMingw)) { $removeMingw = "n" }
+
+$removeVscode = Read-Host "  Remove VS Code and ALL extensions/settings? [y/N]"
+if ([string]::IsNullOrWhiteSpace($removeVscode)) { $removeVscode = "n" }
+
+# Track what was done for the summary
+$summary = @()
 
 Write-Host ""
 
 # ══════════════════════════════════════════════════════════════════════════════
 # MinGW Cleanup
 # ══════════════════════════════════════════════════════════════════════════════
-if ($removeMingw.ToLower() -eq 'y') {
+if ($removeMingw -and $removeMingw.ToLower() -eq 'y') {
     $mingwDir = "C:\MinGW14"
     if (Test-Path $mingwDir) {
         Write-Log "INFO" "Removing MinGW GCC 14..."
         $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$mingwDir' -Recurse -Force -ErrorAction SilentlyContinue")
         Invoke-WithBounceProgress -Message "Removing MinGW GCC 14" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "Deleted C:\MinGW14"
+
+        # Verify deletion
+        if (Test-Path $mingwDir) {
+            Write-Warn "C:\MinGW14 could not be fully deleted (files may be in use)."
+            Write-Info "Close any programs using GCC and try again."
+            $summary += "MinGW: partially removed (some files locked)"
+        }
+        else {
+            Write-Ok "Deleted C:\MinGW14"
+            $summary += "MinGW: removed"
+        }
     }
     else {
         Write-Ok "C:\MinGW14 not found (already removed)."
+        $summary += "MinGW: already clean"
     }
 
-    $userPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
-    if ($userPath -and $userPath -match 'MinGW14') {
-        Write-Log "INFO" "Cleaning MinGW from User PATH..."
-        $scriptBlock = {
-            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::User)
-            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'MinGW14' }
-            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::User)
-        }.ToString()
-        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
-        Invoke-WithBounceProgress -Message "Cleaning MinGW Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "MinGW removed from User PATH."
-    }
-    else {
-        Write-Ok "MinGW absent from User PATH (already clean)."
-    }
+    # Clean PATH inline (no child process needed)
+    Remove-PathEntries -Target 'User' -Pattern 'MinGW14' -Label "MinGW"
+}
+else {
+    Write-Info "Skipping MinGW removal."
+    $summary += "MinGW: skipped"
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
 # VS Code Cleanup
 # ══════════════════════════════════════════════════════════════════════════════
-if ($removeVscode.ToLower() -eq 'y') {
+if ($removeVscode -and $removeVscode.ToLower() -eq 'y') {
     Write-Step "Uninstalling VS Code..."
     
     # Check for uninstaller
@@ -159,6 +193,7 @@ if ($removeVscode.ToLower() -eq 'y') {
         Write-Ok "VS Code uninstaller not found (already uninstalled)."
     }
 
+    # Clean up settings and extensions
     $appDataCode = "$env:APPDATA\Code"
     $userProfileVscode = "$env:USERPROFILE\.vscode"
 
@@ -166,7 +201,11 @@ if ($removeVscode.ToLower() -eq 'y') {
         Write-Log "INFO" "Deleting AppData\Roaming\Code..."
         $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$appDataCode' -Recurse -Force -ErrorAction SilentlyContinue")
         Invoke-WithBounceProgress -Message "Deleting VS Code Settings" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "Deleted AppData\Roaming\Code."
+        if (Test-Path $appDataCode) {
+            Write-Warn "Could not fully delete AppData\Roaming\Code (files may be in use)."
+        } else {
+            Write-Ok "Deleted AppData\Roaming\Code."
+        }
     }
     else {
         Write-Ok "AppData\Roaming\Code not found (already clean)."
@@ -176,48 +215,42 @@ if ($removeVscode.ToLower() -eq 'y') {
         Write-Log "INFO" "Deleting .vscode extensions folder..."
         $argsArray = @("-NoProfile", "-Command", "Remove-Item -Path '$userProfileVscode' -Recurse -Force -ErrorAction SilentlyContinue")
         Invoke-WithBounceProgress -Message "Deleting VS Code Extensions" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "Deleted .vscode extensions folder."
+        if (Test-Path $userProfileVscode) {
+            Write-Warn "Could not fully delete .vscode folder (files may be in use)."
+        } else {
+            Write-Ok "Deleted .vscode extensions folder."
+        }
     }
     else {
         Write-Ok ".vscode extensions folder not found (already clean)."
     }
 
-    # User PATH
-    $userPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
-    if ($userPath -and ($userPath -match 'Microsoft VS Code')) {
-        Write-Log "INFO" "Cleaning VS Code from User PATH..."
-        $scriptBlock = {
-            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::User)
-            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
-            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::User)
-        }.ToString()
-        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
-        Invoke-WithBounceProgress -Message "Cleaning VS Code User Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "VS Code removed from User PATH."
-    }
-    else {
-        Write-Ok "VS Code absent from User PATH."
-    }
-    
-    # Machine PATH
-    $machinePath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine)
-    if ($machinePath -and ($machinePath -match 'Microsoft VS Code')) {
-        Write-Log "INFO" "Cleaning VS Code from Machine PATH..."
-        $scriptBlock = {
-            $path = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine)
-            $cleaned = ($path -split ';') | Where-Object { $_ -and $_ -notmatch 'Microsoft VS Code' }
-            [Environment]::SetEnvironmentVariable('Path', ($cleaned -join ';').Trim(';'), [EnvironmentVariableTarget]::Machine)
-        }.ToString()
-        $argsArray = @("-NoProfile", "-Command", $scriptBlock)
-        Invoke-WithBounceProgress -Message "Cleaning VS Code Sys Path" -FilePath "powershell.exe" -ArgumentList $argsArray | Out-Null
-        Write-Ok "VS Code removed from Machine PATH."
-    }
-    else {
-        Write-Ok "VS Code absent from Machine PATH."
-    }
+    # Clean PATH inline - both User and Machine
+    Remove-PathEntries -Target 'User' -Pattern 'Microsoft VS Code' -Label "VS Code"
+    Remove-PathEntries -Target 'Machine' -Pattern 'Microsoft VS Code' -Label "VS Code"
+
+    $summary += "VS Code: removed"
+}
+else {
+    Write-Info "Skipping VS Code removal."
+    $summary += "VS Code: skipped"
 }
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Summary
+# ══════════════════════════════════════════════════════════════════════════════
 Write-Host ""
-Write-Host "  [✓] Cleanup finished!" -ForegroundColor Green
+Write-Host "  +------------------------------------------+" -ForegroundColor Green
+Write-Host "  |  Cleanup Summary                         |" -ForegroundColor Green
+Write-Host "  +------------------------------------------+" -ForegroundColor Green
+foreach ($line in $summary) {
+    Write-Host "      * $line" -ForegroundColor White
+}
+Write-Host ""
+Write-Host "  [+] Cleanup finished!" -ForegroundColor Green
+Write-Host ""
+Write-Host "  +--------------------------------------------------------------+" -ForegroundColor White
+Write-Host "  |  PATH changes take effect in NEW terminal windows.          |" -ForegroundColor White
+Write-Host "  +--------------------------------------------------------------+" -ForegroundColor White
 Write-Host ""
 Start-Sleep -Seconds 5

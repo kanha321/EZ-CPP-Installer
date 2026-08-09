@@ -3,10 +3,11 @@
         "prefix": "c",
         "body": [
             "#include<stdio.h>",
-            "#include<conio.h>",
+            "#include<stdlib.h>",
             "",
-            "void main() {",
+            "int main() {",
             "\t$1",
+            "\treturn 0;",
             "}"
         ],
         "description": "boilerPlate Code for c"

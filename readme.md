@@ -8,6 +8,7 @@
 ## What It Automates
 
 ### This program streamlines the setup process for the following tasks:
+*(Specially designed for **Competitive Programming** efficiency!)*
 
 1. **C Compiler (MinGW) Installation**: This step, often considered the most challenging (for beginners), is fully automated❤️.
 2. **Path Addition**
