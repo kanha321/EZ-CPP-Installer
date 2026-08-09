@@ -69,10 +69,10 @@ irm https://raw.githubusercontent.com/kanha321/EZ-CPP-Installer/main/uninstaller
 
 The installer has evolved significantly since its inception, moving from basic batch scripts to an advanced PowerShell module.
 
-*   **v6.0 (Current)** - Complete modular redesign. Fast cloud-hosted setup with auto-elevation, animated progress bars, zero software pre-requisites, and a clean uninstaller.
-*   **v5.0** - Transitioned to downloading the VS Code installer dynamically from microsoft.com instead of bundling it in a zip. Upgraded the compiler to MinGW GCC 14.
-*   **v4.0** - Addressed an installation bug where Windows usernames containing spaces would fail. Split VS Code and MinGW into separate zip assets. Focused scope entirely on Windows 10/11 64-bit.
-*   **v3.1** - Dropped legacy support for 32-bit architecture and Windows 7/8/8.1 due to modern VS Code compatibility limits. Upgraded VS Code to v1.92 and 7-Zip to v24.07.
+*   **v6.0 (Aug 2026)** - Complete modular redesign. Fast cloud-hosted setup with auto-elevation, animated progress bars, zero software pre-requisites, and a clean uninstaller.
+*   **v5.0 (Jun 2025)** - Transitioned to downloading the VS Code installer dynamically from microsoft.com instead of bundling it in a zip. Upgraded the compiler to MinGW GCC 14.
+*   **v4.0 (Nov 2024)** - Addressed an installation bug where Windows usernames containing spaces would fail. Split VS Code and MinGW into separate zip assets. Focused scope entirely on Windows 10/11 64-bit.
+*   **v3.1 (Aug 2024)** - Dropped legacy support for 32-bit architecture and Windows 7/8/8.1 due to modern VS Code compatibility limits. Upgraded VS Code to v1.92 and 7-Zip to v24.07.
 *   **v3.0 (Dec 2023)** - Massive feature update. Introduced OS architecture detection, updated to VS Code v1.70. Fully automated the injection of VS Code snippets, extensions, and applied the "HackTheBox" theme. Consolidated operations using 7-Zip for better stability.
 *   **v2.0 (Nov 1, 2022)** - Updated the bundled VS Code version and refactored the environment PATH logic into a dedicated script.
 *   **v1.0 (Nov 3, 2021)** - The original release. Solved major "looping" bugs where Windows failed to locate `minGW.exe` (which was removed due to false-positive antivirus flags). Basic functionality established.
