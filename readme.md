@@ -51,7 +51,7 @@
 
 ---
 
-## 🚀 Installation Procedure  [(Download↓)](https://github.com/kanha321/EZ-CPP-Installer/releases)
+## 🚀 Installation Procedure
 
 ~~1. Extract the zip file~~  
 ~~2. Run the "install-c" file.~~  
