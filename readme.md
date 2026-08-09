@@ -2,10 +2,7 @@
 
 # EZ CPP 😎
 
-[![Version](https://img.shields.io/github/v/release/kanha321/EZ-CPP-Installer?style=for-the-badge&color=blue)](https://github.com/kanha321/EZ-CPP-Installer/releases)
-[![Platform](https://img.shields.io/badge/Platform-Windows_10_%7C_11_(64--bit)-0078D4?style=for-the-badge&logo=windows)](https://microsoft.com/windows)
-[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?style=for-the-badge&logo=powershell)](https://docs.microsoft.com/powershell/)
-[![GCC](https://img.shields.io/badge/GCC-14%2B_(UCRT64)-00599C?style=for-the-badge&logo=cplusplus)](https://gcc.gnu.org/)
+[![Version](https://img.shields.io/github/v/release/kanha321/EZ-CPP-Installer?style=flat-square&color=blue)](https://github.com/kanha321/EZ-CPP-Installer/releases) [![Platform](https://img.shields.io/badge/Platform-Windows_10_%7C_11_(64--bit)-0078D4?style=flat-square&logo=windows)](https://microsoft.com/windows) [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?style=flat-square&logo=powershell)](https://docs.microsoft.com/powershell/) [![GCC](https://img.shields.io/badge/GCC-14%2B_(UCRT64)-00599C?style=flat-square&logo=cplusplus)](https://gcc.gnu.org/)
 
 **A one-command, fully automated installer for a complete C/C++ Development Environment on Windows.**  
 *(Specially designed for **Competitive Programming** efficiency!)*
@@ -15,11 +12,11 @@
 </div>
 
 ## 📌 Table of Contents
-- [What It Automates](#-what-it-automates)
-- [Requirements](#-requirements)
-- [Installation Procedure](#-installation-procedure)
-- [Uninstallation Procedure](#-uninstallation-procedure)
-- [Project History](#-project-history)
+- [What It Automates](#what-it-automates)
+- [Requirements](#requirements)
+- [Installation Procedure](#installation-procedure)
+- [Uninstallation Procedure](#uninstallation-procedure)
+- [Project History](#📜-project-history)
 
 ---
 
